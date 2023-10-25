@@ -1,0 +1,40 @@
+####################################################################################################
+#### Makefile settings
+####################################################################################################
+#### FAQ:
+####	+= append to variable
+####	?= If the variable is not defined, set it to this value
+####	:= simple variable operator, evaluated immediately
+####	= resursive variable expansion, not evaluated until variable is used3
+####
+####	shellscript with nested if/else will expand variables to the bottom compared to
+####	makefile native ifndef, ifdef, ifneq, ifeq conditions that would stop at given level
+####################################################################################################
+.ONESHELL:    # multiline targets
+# set bash as shell in makefile targets
+.SHELL        : $(shell which bash) -euo pipefail --login
+SHELL         := $(shell which bash)
+SHELL_NAME    := $(notdir ${SHELL})
+MAKEFLAGS     += --no-print-directory
+MAKEFLAGS     += --always-make
+MAKEFLAGS     += --no-builtin-rules
+MAKEFLAGS     += --warn-undefined-variables
+.DEFAULT_GOAL := help
+
+DEBUG         ?= true
+VERBOSE       ?= true
+
+
+ifneq ($(DEBUG),true)
+.SHELLFLAGS	:= -eu -o pipefail -c
+else
+.SHELLFLAGS	:= -exu -o pipefail -c
+endif
+
+
+ifeq  ($(filter true, $(DEBUG) $(VERBOSE)),)
+.SILENT:
+endif
+
+# ! TODO do we want to EXPORT all variables?
+.EXPORT_ALL_VARIABLES:
